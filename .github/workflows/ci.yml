@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Audit
+        run: npm audit --audit-level=moderate
+
+      - name: Docker build
+        run: docker build -t labelbridge-mcp:ci .
+
+      - name: Run Docker container
+        run: |
+          docker run --rm -d \
+            --name labelbridge-mcp-ci \
+            -p 3000:3000 \
+            -e PUBLIC_BASE_URL=http://127.0.0.1:3000 \
+            labelbridge-mcp:ci
+
+      - name: Check container health
+        run: |
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:3000/healthz; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs labelbridge-mcp-ci
+          exit 1
+
+      - name: Stop Docker container
+        if: always()
+        run: docker stop labelbridge-mcp-ci || true
