@@ -1,0 +1,46 @@
+{
+  "name": "labelbridge-mcp",
+  "version": "0.1.0",
+  "description": "One-time human-in-the-loop semantic labeling bridge for PlayMCP.",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "labelbridge-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/index.js",
+    "smoke": "tsx scripts/smoke.ts",
+    "full-loop": "tsx scripts/smoke.ts",
+    "demo-form": "tsx scripts/demo-form.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "playmcp",
+    "labeling",
+    "human-in-the-loop",
+    "kakao"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.23.3",
+    "express": "^5.2.1",
+    "zod": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.3",
+    "eslint": "^9.39.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

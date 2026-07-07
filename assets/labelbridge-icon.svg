@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img" aria-label="LabelBridge MCP icon">
+  <rect width="600" height="600" rx="84" fill="#eef3f0"/>
+  <rect x="82" y="88" width="436" height="424" rx="34" fill="#ffffff" stroke="#14231f" stroke-width="12"/>
+  <rect x="122" y="134" width="212" height="34" rx="17" fill="#007e68"/>
+  <rect x="122" y="198" width="356" height="42" rx="16" fill="#eaf2fb" stroke="#215f9a" stroke-width="6"/>
+  <rect x="122" y="272" width="356" height="42" rx="16" fill="#f7fbf9" stroke="#cddbd5" stroke-width="6"/>
+  <rect x="122" y="346" width="168" height="54" rx="18" fill="#f5c542" stroke="#14231f" stroke-width="8"/>
+  <rect x="310" y="346" width="168" height="54" rx="18" fill="#007e68" stroke="#14231f" stroke-width="8"/>
+  <path d="M172 373l30 30 58-70" fill="none" stroke="#14231f" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M350 372h88" stroke="#ffffff" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="454" cy="152" r="16" fill="#f5c542" stroke="#14231f" stroke-width="8"/>
+  <path d="M244 462h112" stroke="#14231f" stroke-width="16" stroke-linecap="round"/>
+  <path d="M300 440v44" stroke="#14231f" stroke-width="16" stroke-linecap="round"/>
+</svg>
