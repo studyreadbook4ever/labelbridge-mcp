@@ -7,7 +7,7 @@
 | 항목 | 입력값 |
 | --- | --- |
 | MCP 서버 이름 | `labelbridge-mcp` |
-| 설명 | `AI가 혼자 판단하기 애매한 배열 데이터를 사람용 HTML 답안지로 만들고, 완료 답안을 1회용 capability로 검증해 dictionary 배열로 회수합니다.` |
+| 설명 | `배열 데이터를 추천답변 없는 빈칸 HTML 폼으로 만들고, 사용자가 직접 채운 답안을 1회용 capability로 검증해 dictionary 배열로 회수합니다.` |
 | Git URL | `https://github.com/studyreadbook4ever/labelbridge-mcp.git` |
 | 브랜치 / ref | `main` |
 | Dockerfile 경로 | `Dockerfile` |
@@ -21,10 +21,10 @@
 | 대표 이미지 | `assets/labelbridge-icon-600.png` |
 | MCP 이름 | `LabelBridge` |
 | MCP 식별자 | `labelBridge` |
-| MCP 설명 | `AI가 혼자 판단하기 애매한 의미 라벨링을 사람에게 잠깐 빌려주는 MCP입니다. 배열 데이터를 설치 없는 HTML 답안지로 만들고, 사용자는 빈칸을 채운 뒤 공유창/복사/파일받기로 답안을 돌려보냅니다. MCP는 결과 JSON을 1회용 capability, AES-GCM, 무결성 hash로 검증해 원본 dictionary 배열에 사람이 채운 semantic label을 붙여 반환합니다.` |
-| 대화 예시 1 | `이 목록을 사람용 답안지로 만들어줘` |
-| 대화 예시 2 | `완료한 답안을 구조화 데이터로 회수해줘` |
-| 대화 예시 3 | `애매한 문장 의미 라벨링 부탁해` |
+| MCP 설명 | `추천답변 없이 사람이 직접 채우는 blank-only human labeling MCP입니다. 배열 데이터를 빈칸 HTML 폼으로 만들고, 사용자가 모든 의미 값을 직접 입력하면 MCP가 1회용 capability와 무결성 hash로 검증해 array[dictionary]로 회수합니다. 게임 영웅별 특전 선택, 학생 진로 입력처럼 AI가 임의로 정하면 안 되는 판단을 안전하게 사람에게 맡깁니다.` |
+| 대화 예시 1 | `오버워치 영웅별 특전 선택 폼 만들어줘` |
+| 대화 예시 2 | `3학년 3반 학생 진로 입력 폼 만들어줘` |
+| 대화 예시 3 | `완료 답안을 dictionary 배열로 회수해줘` |
 | 인증 방식 | `인증 사용하지 않음` |
 | MCP Endpoint | `https://YOUR_DEPLOYED_HOST/mcp` |
 
@@ -39,7 +39,7 @@
 
 - `Git URL`: `https://github.com/studyreadbook4ever/labelbridge-mcp.git`
 - `MCP Endpoint`: PlayMCP에서 빌드/배포가 끝난 뒤 발급되거나 직접 배포한 공개 URL의 `/mcp` 경로를 넣습니다.
-- `대표 이미지`: `assets/labelbridge-icon-600.png`는 600x600 PNG라 업로드 조건에 맞습니다.
+- `대표 이미지`: `assets/labelbridge-icon-600.png`는 1254x1254 PNG라 업로드 조건에 맞습니다.
 
 Git URL은 `git ls-remote --heads https://github.com/studyreadbook4ever/labelbridge-mcp.git main`으로 공개 접근을 확인했습니다.
 
