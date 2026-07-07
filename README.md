@@ -56,6 +56,7 @@ SMOKE_MCP_URL=http://127.0.0.1:3000/mcp npm run smoke
 npm run typecheck
 npm test
 npm run build
+npm run check:submission
 ```
 
 실제 MCP 왕복 테스트:

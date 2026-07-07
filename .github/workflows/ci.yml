@@ -34,6 +34,9 @@ jobs:
       - name: Audit
         run: npm audit --audit-level=moderate
 
+      - name: Check PlayMCP submission values
+        run: npm run check:submission
+
       - name: Docker build
         run: docker build -t labelbridge-mcp:ci .
 
