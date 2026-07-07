@@ -14,11 +14,11 @@ try {
       task_description: "각 항목을 보고 사람이 이해한 의미를 짧게 채웁니다.",
       items: [
         {
-          id: "kakao_001",
+          id: "transfer_001",
           text: "카카오톡 나에게 보내기로 옮긴 에어컨 사진",
           hint: "전자제품",
           context: "기기 간 임시 파일 이동",
-          source_app: "KakaoTalk",
+          source_app: "Messenger",
         },
         {
           id: "memo_002",

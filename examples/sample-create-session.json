@@ -3,7 +3,7 @@
   "task_description": "각 항목을 보고 사람이 이해한 의미를 짧게 라벨링합니다.",
   "items": [
     {
-      "id": "kakao_001",
+      "id": "transfer_001",
       "text": "나에게 보내기로 옮긴 에어컨 사진",
       "hint": "전자제품"
     },

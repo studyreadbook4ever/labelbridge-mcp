@@ -1,4 +1,4 @@
-# Kakao PlayMCP Form Values
+# PlayMCP Form Values
 
 아래 값은 PlayMCP 제출 화면에 바로 붙여 넣는 용도입니다. `MCP Endpoint`만 실제 배포 URL로 바꾸면 됩니다.
 

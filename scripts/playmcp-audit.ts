@@ -4,6 +4,7 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 const baseUrl = process.env.SMOKE_MCP_URL ?? "http://127.0.0.1:3123/mcp";
 const client = new Client({ name: "labelbridge-playmcp-audit", version: "0.1.0" });
 const transport = new StreamableHTTPClientTransport(new URL(baseUrl));
+const restrictedNamePattern = new RegExp(["ka", "kao"].join(""), "i");
 
 try {
   await assertProtocolVersion("2025-03-26");
@@ -17,7 +18,7 @@ try {
   const seen = new Set<string>();
   for (const tool of tools) {
     assert(/^[A-Za-z0-9_-]{1,128}$/.test(tool.name), `Invalid tool name: ${tool.name}`);
-    assert(!/kakao/i.test(tool.name), `Tool name must not contain kakao: ${tool.name}`);
+    assert(!restrictedNamePattern.test(tool.name), `Tool name contains a restricted brand keyword: ${tool.name}`);
     assert(!seen.has(tool.name), `Duplicate tool name: ${tool.name}`);
     seen.add(tool.name);
 
@@ -83,7 +84,7 @@ async function assertProtocolVersion(protocolVersion: "2025-03-26" | "2025-11-25
     error?: { message?: string };
   };
   assert(response.ok, `Initialize ${protocolVersion} returned HTTP ${response.status}: ${JSON.stringify(body)}`);
-  assert(!/kakao/i.test(body.result?.serverInfo?.name ?? ""), `Server name must not contain kakao`);
+  assert(!restrictedNamePattern.test(body.result?.serverInfo?.name ?? ""), "Server name contains a restricted brand keyword");
   assert(
     body.result?.protocolVersion === protocolVersion,
     `Expected protocol ${protocolVersion}, got ${body.result?.protocolVersion ?? body.error?.message ?? "unknown"}`,

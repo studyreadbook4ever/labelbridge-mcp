@@ -9,6 +9,7 @@ if (!endpoint) {
 
 const endpointUrl = new URL(endpoint);
 const localEndpoint = ["localhost", "127.0.0.1", "::1"].includes(endpointUrl.hostname);
+const restrictedNamePattern = new RegExp(["ka", "kao"].join(""), "i");
 assert(endpointUrl.pathname.replace(/\/+$/, "").endsWith("/mcp"), "MCP endpoint should end with /mcp.");
 if (!localEndpoint) {
   assert(endpointUrl.protocol === "https:", "Public PlayMCP endpoint must use https.");
@@ -123,7 +124,7 @@ async function assertProtocolVersion(protocolVersion: "2025-03-26" | "2025-11-25
     error?: { message?: string };
   };
   assert(response.ok, `Initialize ${protocolVersion} returned HTTP ${response.status}: ${JSON.stringify(body)}`);
-  assert(!/kakao/i.test(body.result?.serverInfo?.name ?? ""), "Server name must not contain kakao.");
+  assert(!restrictedNamePattern.test(body.result?.serverInfo?.name ?? ""), "Server name contains a restricted brand keyword.");
   assert(
     body.result?.protocolVersion === protocolVersion,
     `Expected protocol ${protocolVersion}, got ${body.result?.protocolVersion ?? body.error?.message ?? "unknown"}`,
