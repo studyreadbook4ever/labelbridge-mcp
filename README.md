@@ -74,6 +74,12 @@ MCP_URL=http://127.0.0.1:3000/mcp npm run demo-form
 
 GitHub Actions CI는 `npm ci`, typecheck, test, build, audit, Docker build, 컨테이너 `/healthz`, 컨테이너 MCP full-loop, PlayMCP tool metadata audit까지 확인합니다.
 
+배포된 endpoint가 나오면 다음으로 공개 URL 계약을 한 번에 확인할 수 있습니다.
+
+```bash
+MCP_ENDPOINT=https://YOUR_DEPLOYED_HOST/mcp npm run check:endpoint
+```
+
 ## Docker
 
 PlayMCP의 Git 소스 빌드 화면에서 이 저장소의 `Dockerfile`을 사용하면 됩니다.

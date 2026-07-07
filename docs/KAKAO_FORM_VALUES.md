@@ -60,3 +60,8 @@ curl https://YOUR_DEPLOYED_HOST/healthz
 ```
 
 PlayMCP의 `정보 불러오기`는 `/mcp` endpoint를 대상으로 실행합니다.
+배포 URL이 나오면 로컬에서 아래처럼 최종 확인할 수 있습니다.
+
+```bash
+MCP_ENDPOINT=https://YOUR_DEPLOYED_HOST/mcp npm run check:endpoint
+```

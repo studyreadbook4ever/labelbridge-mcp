@@ -61,6 +61,9 @@ jobs:
       - name: Check PlayMCP tool metadata
         run: SMOKE_MCP_URL=http://127.0.0.1:3000/mcp npm run playmcp-audit
 
+      - name: Check deployed endpoint contract
+        run: MCP_ENDPOINT=http://127.0.0.1:3000/mcp npm run check:endpoint
+
       - name: Stop Docker container
         if: always()
         run: docker stop labelbridge-mcp-ci || true
