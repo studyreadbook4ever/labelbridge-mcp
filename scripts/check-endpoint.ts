@@ -32,6 +32,7 @@ try {
   assert(toolNames.includes("create_labeling_session"), "Missing create_labeling_session tool.");
   assert(toolNames.includes("ingest_labeling_result"), "Missing ingest_labeling_result tool.");
   assert(toolNames.includes("inspect_labeling_session"), "Missing inspect_labeling_session tool.");
+  await assertCleanToolError();
 
   const created = await client.callTool({
     name: "create_labeling_session",
@@ -76,6 +77,7 @@ try {
         healthz: healthUrl.toString(),
         protocols: ["2025-03-26", "2025-11-25"],
         tools: toolNames,
+        clean_tool_error: true,
         form_url: redactUrl(formUrl),
         session_status: inspectContent.status,
       },
@@ -85,6 +87,24 @@ try {
   );
 } finally {
   await client.close();
+}
+
+async function assertCleanToolError(): Promise<void> {
+  const missing = await client.callTool({
+    name: "inspect_labeling_session",
+    arguments: { session_id: "00000000-0000-0000-0000-000000000000" },
+  });
+  assert(missing.isError === true, "Expected missing session call to return isError=true.");
+  const missingContent = missing.content as Array<{ type: string; text?: string }>;
+  const text = missingContent
+    .filter((content) => content.type === "text")
+    .map((content) => content.text ?? "")
+    .join("\n")
+    .trim();
+  assert(text.length > 0, "Tool error text is empty.");
+  assert(text.length <= 240, `Tool error text is too long: ${text.length} characters.`);
+  assert(!/[{}[\]]/.test(text), `Tool error text looks like raw JSON: ${text}`);
+  assert(!/(stack|trace|zoderror|sqlite|internal server error|error:)/i.test(text), `Tool error text looks raw: ${text}`);
 }
 
 function healthUrlFor(url: URL): URL {
