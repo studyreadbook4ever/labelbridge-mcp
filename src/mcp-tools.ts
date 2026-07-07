@@ -105,7 +105,7 @@ const inspectOutputSchema = {
 export function createMcpServer(context: ToolContext): McpServer {
   const server = new McpServer(
     {
-      name: "LabelBridge MCP",
+      name: "labelbridge-mcp",
       version: "0.1.0",
     },
     {

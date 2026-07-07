@@ -124,6 +124,7 @@ async function assertProtocolVersion(protocolVersion: "2025-03-26" | "2025-11-25
     error?: { message?: string };
   };
   assert(response.ok, `Initialize ${protocolVersion} returned HTTP ${response.status}: ${JSON.stringify(body)}`);
+  assert(body.result?.serverInfo?.name === "labelbridge-mcp", `Unexpected server name: ${body.result?.serverInfo?.name ?? "unknown"}`);
   assert(!restrictedNamePattern.test(body.result?.serverInfo?.name ?? ""), "Server name contains a restricted brand keyword.");
   assert(
     body.result?.protocolVersion === protocolVersion,
