@@ -1,5 +1,7 @@
 # LabelBridge MCP
 
+[![CI](https://github.com/studyreadbook4ever/labelbridge-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/studyreadbook4ever/labelbridge-mcp/actions/workflows/ci.yml)
+
 AI가 처리하기 애매한 의미 판단을, 비전문가가 HTML 하나로 빠르게 채워 넣게 만들고, 그 결과를 다시 MCP가 AI-native structured context로 회수하는 human-in-the-loop labeling bridge입니다.
 
 ## 핵심 아이디어
@@ -69,6 +71,8 @@ SMOKE_MCP_URL=http://127.0.0.1:3000/mcp npm run full-loop
 ```bash
 MCP_URL=http://127.0.0.1:3000/mcp npm run demo-form
 ```
+
+GitHub Actions CI는 `npm ci`, typecheck, test, build, audit, Docker build, 컨테이너 `/healthz`, 컨테이너 MCP full-loop까지 확인합니다.
 
 ## Docker
 
