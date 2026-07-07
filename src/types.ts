@@ -20,7 +20,6 @@ export interface LabelField {
   min?: number;
   max?: number;
   options?: LabelFieldOption[];
-  defaultValue?: JsonValue;
 }
 
 export interface NormalizedItem {

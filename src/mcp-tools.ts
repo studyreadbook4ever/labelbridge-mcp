@@ -1,7 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as z from "zod/v4";
 import type { AppConfig } from "./config.js";
-import { renderLabelingForm } from "./form-template.js";
 import { batchHashForSession, labelSchemaHash } from "./integrity.js";
 import {
   createLabelingSessionInputSchema,
@@ -80,16 +79,6 @@ const createOutputSchema = {
   filename: z.string(),
   expires_at: z.string(),
   item_count: z.number().int(),
-  batch_hash: z.string(),
-  schema_hash: z.string(),
-  security_model: z.object({
-    one_time_capability: z.literal(true),
-    capability_bits: z.number().int(),
-    capability_storage: z.string(),
-    result_encryption: z.literal("AES-256-GCM"),
-    replay_policy: z.string(),
-  }),
-  html: z.string().optional(),
 };
 
 const ingestOutputSchema = {
@@ -131,7 +120,7 @@ export function createMcpServer(context: ToolContext): McpServer {
     {
       title: "Create one-time semantic labeling form",
       description:
-        "Turn ambiguous array data into a self-contained HTML answer sheet for human semantic judgment. The browser returns encrypted answer JSON through share, copy, or download, and this MCP server accepts it only once.",
+        "LabelBridge(레이블브릿지) creates a blank-only HTML labeling form from an array. It never suggests answers; a human fills every semantic field, then returns encrypted answer JSON for one-time ingest.",
       inputSchema: createLabelingSessionInputSchema,
       outputSchema: createOutputSchema,
       annotations: {
@@ -152,7 +141,6 @@ export function createMcpServer(context: ToolContext): McpServer {
       const capabilityToken = randomToken(32);
       const resultKey = randomToken(32);
       const expiresAt = new Date(Date.now() + input.expires_in_minutes * 60_000).toISOString();
-      const schemaHash = labelSchemaHash(labelFields);
       const batchHash = batchHashForSession({
         taskTitle: input.task_title,
         taskDescription: input.task_description,
@@ -172,9 +160,6 @@ export function createMcpServer(context: ToolContext): McpServer {
       });
 
       const urls = makeFormUrls(context.config.publicBaseUrl, session, capabilityToken);
-      const html = input.include_html
-        ? renderLabelingForm({ session, items, capabilityToken })
-        : undefined;
       const structuredContent = {
         session_id: session.sessionId,
         form_url: urls.formUrl,
@@ -182,16 +167,6 @@ export function createMcpServer(context: ToolContext): McpServer {
         filename: urls.filename,
         expires_at: session.expiresAt,
         item_count: session.itemCount,
-        batch_hash: session.batchHash,
-        schema_hash: schemaHash,
-        security_model: {
-          one_time_capability: true as const,
-          capability_bits: 256,
-          capability_storage: "server stores only HMAC-SHA256 digest of the bearer capability",
-          result_encryption: "AES-256-GCM" as const,
-          replay_policy: "first valid ingest atomically consumes the session; later submissions are rejected",
-        },
-        ...(html ? { html } : {}),
       };
 
       return {
@@ -216,7 +191,7 @@ export function createMcpServer(context: ToolContext): McpServer {
     {
       title: "Ingest completed one-time labeling result",
       description:
-        "Accept the answer JSON created by a LabelBridge HTML form, decrypt it, validate it against the original session, atomically consume the one-time capability, and return AI-native labeled dictionaries.",
+        "LabelBridge(레이블브릿지) ingests answer JSON created by its HTML form, validates hashes and the one-time capability, consumes it atomically, and returns AI-native labeled dictionaries.",
       inputSchema: ingestResultInputSchema,
       outputSchema: ingestOutputSchema,
       annotations: {
@@ -281,7 +256,8 @@ export function createMcpServer(context: ToolContext): McpServer {
     "inspect_labeling_session",
     {
       title: "Inspect LabelBridge session",
-      description: "Check one-time session status without exposing the capability token or raw labels.",
+      description:
+        "LabelBridge(레이블브릿지) checks one-time labeling status without exposing the capability token or raw human labels.",
       inputSchema: inspectSessionInputSchema,
       outputSchema: inspectOutputSchema,
       annotations: {
@@ -314,34 +290,6 @@ export function createMcpServer(context: ToolContext): McpServer {
         structuredContent,
       };
     },
-  );
-
-  server.registerResource(
-    "labelbridge-security-model",
-    "labelbridge://security-model",
-    {
-      title: "LabelBridge Security Model",
-      description: "Threat model and one-time submission guarantees.",
-      mimeType: "text/markdown",
-    },
-    async (uri) => ({
-      contents: [
-        {
-          uri: uri.href,
-          mimeType: "text/markdown",
-          text: [
-            "# LabelBridge Security Model",
-            "",
-            "- 256-bit bearer capability is generated per session.",
-            "- The server stores only HMAC-SHA256(capability) and never stores the raw token.",
-            "- Result files encrypt human labels with AES-256-GCM before download.",
-            "- Decrypted payloads must match schema hash, item count, timestamps, and per-item source hashes.",
-            "- The first valid ingest runs in a SQLite immediate transaction and consumes the session.",
-            "- Replays, expired sessions, batch-hash mismatches, unknown item IDs, and incomplete required labels are rejected.",
-          ].join("\n"),
-        },
-      ],
-    }),
   );
 
   return server;

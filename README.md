@@ -72,7 +72,7 @@ SMOKE_MCP_URL=http://127.0.0.1:3000/mcp npm run full-loop
 MCP_URL=http://127.0.0.1:3000/mcp npm run demo-form
 ```
 
-GitHub Actions CI는 `npm ci`, typecheck, test, build, audit, Docker build, 컨테이너 `/healthz`, 컨테이너 MCP full-loop까지 확인합니다.
+GitHub Actions CI는 `npm ci`, typecheck, test, build, audit, Docker build, 컨테이너 `/healthz`, 컨테이너 MCP full-loop, PlayMCP tool metadata audit까지 확인합니다.
 
 ## Docker
 

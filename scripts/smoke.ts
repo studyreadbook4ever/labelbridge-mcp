@@ -32,6 +32,9 @@ try {
   if (!structured.form_url || !structured.session_id) {
     throw new Error("create_labeling_session did not return form_url/session_id");
   }
+  if ("html" in structured || "security_model" in structured) {
+    throw new Error("create_labeling_session returned oversized structured content");
+  }
 
   const response = await fetch(structured.form_url);
   if (!response.ok) {
@@ -40,6 +43,9 @@ try {
   const html = await response.text();
   if (!html.includes("Smoke Semantic Labeling") || !html.includes("labelbridge.form.v1")) {
     throw new Error("Generated HTML did not contain expected form data");
+  }
+  if (html.includes("defaultValue")) {
+    throw new Error("Generated HTML should not contain default answer values");
   }
   const formData = extractFormData(html);
   const capabilityToken = new URL(structured.form_url).searchParams.get("cap");

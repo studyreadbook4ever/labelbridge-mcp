@@ -59,6 +59,9 @@ jobs:
       - name: Check container MCP full loop
         run: SMOKE_MCP_URL=http://127.0.0.1:3000/mcp npm run full-loop
 
+      - name: Check PlayMCP tool metadata
+        run: SMOKE_MCP_URL=http://127.0.0.1:3000/mcp npm run playmcp-audit
+
       - name: Stop Docker container
         if: always()
         run: docker stop labelbridge-mcp-ci || true

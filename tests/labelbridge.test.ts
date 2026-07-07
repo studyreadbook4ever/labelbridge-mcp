@@ -153,6 +153,7 @@ describe("LabelBridge HTML safety", () => {
     expect(html).toContain("답안 보내기");
     expect(html).toContain("답안 내용 복사");
     expect(html).toContain("labelbridge-answer-");
+    expect(html).not.toContain("defaultValue");
   });
 });
 

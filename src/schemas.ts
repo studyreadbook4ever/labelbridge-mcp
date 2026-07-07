@@ -35,8 +35,8 @@ export const labelFieldSchema = z
     min: z.number().optional(),
     max: z.number().optional(),
     options: z.array(labelFieldOptionSchema).min(1).max(20).optional(),
-    defaultValue: jsonValueSchema.optional(),
   })
+  .strict()
   .superRefine((field, ctx) => {
     if ((field.type === "select" || field.type === "multi_select") && !field.options?.length) {
       ctx.addIssue({
@@ -87,10 +87,6 @@ export const createLabelingSessionInputSchema = {
     .max(10080)
     .default(1440)
     .describe("How long the one-time labeling capability remains valid."),
-  include_html: z
-    .boolean()
-    .default(false)
-    .describe("Also include the full self-contained HTML in the MCP response. Usually false; use form_url instead."),
 };
 
 export const ingestResultInputSchema = {
@@ -160,7 +156,6 @@ function defaultLabelFields(): z.infer<typeof labelFieldSchema>[] {
       type: "select",
       required: true,
       description: "헷갈리면 애매를 골라도 됩니다.",
-      defaultValue: "medium",
       options: [
         { value: "high", label: "확실" },
         { value: "medium", label: "보통" },

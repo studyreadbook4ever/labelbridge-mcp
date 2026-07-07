@@ -546,7 +546,7 @@ export function renderLabelingForm(params: RenderFormParams): string {
       lastEnvelope: null,
       lastFilename: "",
       lastJsonText: "",
-      answers: DATA.items.map(() => Object.fromEntries(DATA.label_fields.map((field) => [field.id, defaultValue(field)]))),
+      answers: DATA.items.map(() => Object.fromEntries(DATA.label_fields.map((field) => [field.id, emptyAnswerValue(field)]))),
     };
 
     const el = {
@@ -590,12 +590,10 @@ export function renderLabelingForm(params: RenderFormParams): string {
 
     render();
 
-    function defaultValue(field) {
-      if (field.defaultValue !== undefined) return field.defaultValue;
+    function emptyAnswerValue(field) {
       if (field.type === "multi_select") return [];
-      if (field.type === "boolean") return false;
+      if (field.type === "boolean") return null;
       if (field.type === "number") return null;
-      if (field.type === "select") return field.options?.[0]?.value ?? "";
       return "";
     }
 
