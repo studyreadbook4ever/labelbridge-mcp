@@ -56,6 +56,9 @@ jobs:
           docker logs labelbridge-mcp-ci
           exit 1
 
+      - name: Check container MCP full loop
+        run: SMOKE_MCP_URL=http://127.0.0.1:3000/mcp npm run full-loop
+
       - name: Stop Docker container
         if: always()
         run: docker stop labelbridge-mcp-ci || true
