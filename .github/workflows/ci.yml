@@ -64,6 +64,9 @@ jobs:
       - name: Check deployed endpoint contract
         run: MCP_ENDPOINT=http://127.0.0.1:3000/mcp npm run check:endpoint
 
+      - name: Check tool latency budget
+        run: MCP_ENDPOINT=http://127.0.0.1:3000/mcp npm run check:latency
+
       - name: Stop Docker container
         if: always()
         run: docker stop labelbridge-mcp-ci || true

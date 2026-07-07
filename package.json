@@ -15,6 +15,7 @@
     "full-loop": "tsx scripts/smoke.ts",
     "playmcp-audit": "tsx scripts/playmcp-audit.ts",
     "check:endpoint": "tsx scripts/check-endpoint.ts",
+    "check:latency": "tsx scripts/latency-check.ts",
     "demo-form": "tsx scripts/demo-form.ts",
     "test": "vitest run",
     "test:watch": "vitest",

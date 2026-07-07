@@ -65,3 +65,9 @@ PlayMCP의 `정보 불러오기`는 `/mcp` endpoint를 대상으로 실행합니
 ```bash
 MCP_ENDPOINT=https://YOUR_DEPLOYED_HOST/mcp npm run check:endpoint
 ```
+
+응답속도 조건은 아래처럼 확인합니다.
+
+```bash
+MCP_ENDPOINT=https://YOUR_DEPLOYED_HOST/mcp npm run check:latency
+```
