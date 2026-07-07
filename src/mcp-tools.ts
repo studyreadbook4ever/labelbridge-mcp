@@ -212,12 +212,8 @@ export function createMcpServer(context: ToolContext): McpServer {
         throw new LabelBridgeError("결과 파일의 batch_hash가 세션과 일치하지 않습니다.", "invalid_result");
       }
 
-      const decrypted = await decryptAesGcmJson<unknown>({
-        keyBase64url: session.resultKey,
-        ivBase64url: envelope.encryption.iv,
-        ciphertextBase64url: envelope.encryption.ciphertext,
-      });
-      const payload = resultPayloadSchema.parse(decrypted);
+      const decrypted = await decryptResultPayload(session, envelope);
+      const payload = parseResultPayload(decrypted);
       const consumed = context.storage.consumeResult({
         sessionId: session.sessionId,
         capabilityDigest: digest,
@@ -311,8 +307,38 @@ export function makeFormUrls(
 }
 
 function parseResultEnvelope(value: string | Record<string, unknown>): ResultEnvelope {
-  const raw = typeof value === "string" ? JSON.parse(value) : value;
-  return resultEnvelopeSchema.parse(raw) as ResultEnvelope;
+  let raw: unknown;
+  try {
+    raw = typeof value === "string" ? JSON.parse(value) : value;
+  } catch {
+    throw new LabelBridgeError("답안 JSON 형식이 올바르지 않습니다.", "invalid_result");
+  }
+
+  const parsed = resultEnvelopeSchema.safeParse(raw);
+  if (!parsed.success) {
+    throw new LabelBridgeError("답안 JSON envelope 구조가 올바르지 않습니다.", "invalid_result");
+  }
+  return parsed.data as ResultEnvelope;
+}
+
+async function decryptResultPayload(session: LabelingSession, envelope: ResultEnvelope): Promise<unknown> {
+  try {
+    return await decryptAesGcmJson<unknown>({
+      keyBase64url: session.resultKey,
+      ivBase64url: envelope.encryption.iv,
+      ciphertextBase64url: envelope.encryption.ciphertext,
+    });
+  } catch {
+    throw new LabelBridgeError("답안 JSON을 복호화할 수 없습니다.", "invalid_result");
+  }
+}
+
+function parseResultPayload(value: unknown): ResultPayload {
+  const parsed = resultPayloadSchema.safeParse(value);
+  if (!parsed.success) {
+    throw new LabelBridgeError("복호화된 답안 payload 구조가 올바르지 않습니다.", "invalid_result");
+  }
+  return parsed.data;
 }
 
 function validateEnvelopeEncoding(envelope: ResultEnvelope): void {

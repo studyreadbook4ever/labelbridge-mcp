@@ -96,15 +96,31 @@ async function assertCleanToolError(): Promise<void> {
     name: "inspect_labeling_session",
     arguments: { session_id: "00000000-0000-0000-0000-000000000000" },
   });
-  assert(missing.isError === true, "Expected missing session call to return isError=true.");
-  const missingContent = missing.content as Array<{ type: string; text?: string }>;
-  const text = missingContent
-    .filter((content) => content.type === "text")
-    .map((content) => content.text ?? "")
+  assertCleanToolErrorText(missing, "missing session");
+
+  const badJson = await client.callTool({
+    name: "ingest_labeling_result",
+    arguments: { result_json: "{not-json" },
+  });
+  assertCleanToolErrorText(badJson, "bad result JSON");
+
+  const badEnvelope = await client.callTool({
+    name: "ingest_labeling_result",
+    arguments: { result_json: JSON.stringify({ nope: true }) },
+  });
+  assertCleanToolErrorText(badEnvelope, "bad result envelope");
+}
+
+function assertCleanToolErrorText(result: Awaited<ReturnType<Client["callTool"]>>, label: string): void {
+  assert(result.isError === true, `Expected ${label} call to return isError=true.`);
+  const content = result.content as Array<{ type: string; text?: string }>;
+  const text = content
+    .filter((entry) => entry.type === "text")
+    .map((entry) => entry.text ?? "")
     .join("\n")
     .trim();
   assert(text.length > 0, "Tool error text is empty.");
-  assert(text.length <= 240, `Tool error text is too long: ${text.length} characters.`);
+  assert(text.length <= 240, `Tool error text is too long for ${label}: ${text.length} characters.`);
   assert(!/[{}[\]]/.test(text), `Tool error text looks like raw JSON: ${text}`);
   assert(!/(stack|trace|zoderror|sqlite|internal server error|error:)/i.test(text), `Tool error text looks raw: ${text}`);
 }
