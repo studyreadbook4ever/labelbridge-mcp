@@ -1,6 +1,7 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { rmSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { randomBytes } from "node:crypto";
+import { tmpdir } from "node:os";
 
 export interface AppConfig {
   host: string;
@@ -30,19 +31,49 @@ function loadOrCreateSecret(dataDir: string): Buffer {
   try {
     return readFileSync(path);
   } catch {
-    mkdirSync(dirname(path), { recursive: true });
     const secret = randomBytes(32);
-    writeFileSync(path, secret, { mode: 0o600 });
+    try {
+      mkdirSync(dirname(path), { recursive: true });
+      writeFileSync(path, secret, { mode: 0o600 });
+    } catch {
+      console.warn("Could not persist server secret; using an in-memory secret for this process.");
+    }
     return secret;
+  }
+}
+
+function writableDataDir(): string {
+  const requested = resolve(process.env.DATA_DIR ?? ".data");
+  if (canWriteDirectory(requested)) {
+    return requested;
+  }
+
+  const fallback = resolve(tmpdir(), "labelbridge-mcp-data");
+  if (canWriteDirectory(fallback)) {
+    console.warn(`DATA_DIR is not writable; using fallback data directory: ${fallback}`);
+    return fallback;
+  }
+
+  throw new Error(`No writable data directory found. Tried ${requested} and ${fallback}.`);
+}
+
+function canWriteDirectory(path: string): boolean {
+  try {
+    mkdirSync(path, { recursive: true });
+    const probe = resolve(path, `.labelbridge-write-test-${process.pid}-${Date.now()}`);
+    writeFileSync(probe, "ok", { mode: 0o600 });
+    rmSync(probe, { force: true });
+    return true;
+  } catch {
+    return false;
   }
 }
 
 export function loadConfig(): AppConfig {
   const port = parsePort(process.env.PORT);
   const host = process.env.HOST ?? "0.0.0.0";
-  const dataDir = resolve(process.env.DATA_DIR ?? ".data");
+  const dataDir = writableDataDir();
   const databasePath = resolve(process.env.DATABASE_PATH ?? `${dataDir}/labelbridge.sqlite`);
-  mkdirSync(dataDir, { recursive: true });
 
   const rawPublicBaseUrl = process.env.PUBLIC_BASE_URL?.trim();
   const publicBaseUrl = (rawPublicBaseUrl || `http://localhost:${port}`).replace(/\/+$/, "");

@@ -40,6 +40,24 @@ jobs:
       - name: Docker build
         run: docker build -t labelbridge-mcp:ci .
 
+      - name: Check runtime data-dir fallback
+        run: |
+          docker run --rm -d \
+            --name labelbridge-mcp-ci-fallback \
+            -p 3001:3000 \
+            -e DATA_DIR=/proc/1 \
+            labelbridge-mcp:ci
+          trap 'docker stop labelbridge-mcp-ci-fallback || true' EXIT
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:3001/healthz; then
+              SMOKE_MCP_URL=http://127.0.0.1:3001/mcp npm run full-loop
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs labelbridge-mcp-ci-fallback
+          exit 1
+
       - name: Run Docker container
         run: |
           docker run --rm -d \
