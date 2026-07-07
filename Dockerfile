@@ -3,12 +3,12 @@ FROM node:24-bookworm-slim AS build
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts --no-audit --no-fund
 
 COPY tsconfig.json tsconfig.build.json ./
 COPY src ./src
 RUN npm run build
-RUN npm prune --omit=dev
+RUN npm prune --omit=dev --ignore-scripts --no-audit --no-fund
 
 FROM node:24-bookworm-slim AS runtime
 
