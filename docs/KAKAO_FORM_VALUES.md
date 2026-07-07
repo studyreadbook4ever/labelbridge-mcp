@@ -43,6 +43,7 @@
 
 Git URL은 `git ls-remote --heads https://github.com/studyreadbook4ever/labelbridge-mcp.git main`으로 공개 접근을 확인했습니다.
 GitHub Actions CI에서 `npm ci`, typecheck, test, build, audit, Docker build, container `/healthz`, container MCP full-loop, PlayMCP tool metadata audit 확인까지 통과했습니다.
+MCP Inspector CLI로 Streamable HTTP `tools/list`, `create_labeling_session`, 정제된 error 응답, PlayMCP식 forwarded HTTPS URL 추론까지 확인했습니다.
 
 ## Endpoint 입력 전 확인
 
