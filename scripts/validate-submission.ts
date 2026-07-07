@@ -48,7 +48,8 @@ assert(endpoint === "https://YOUR_DEPLOYED_HOST/mcp", `Unexpected endpoint place
 const trackedFiles = execFileSync("git", ["ls-files"], { encoding: "utf8" })
   .split("\n")
   .filter(Boolean)
-  .filter((file) => !file.startsWith("assets/") && !file.endsWith("package-lock.json"));
+  .filter((file) => !file.startsWith("assets/") && !file.endsWith("package-lock.json"))
+  .filter((file) => !/\.(png|jpe?g|gif)$/i.test(file));
 for (const file of trackedFiles) {
   const text = readFileSync(file, "utf8");
   assert(!restrictedNamePattern.test(text), `Tracked file contains a restricted brand keyword: ${file}`);

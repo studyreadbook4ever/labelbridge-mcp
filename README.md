@@ -98,7 +98,7 @@ docker run --rm -p 3000:3000 \
   labelbridge-mcp
 ```
 
-대표 이미지는 [assets/labelbridge-icon-600.png](assets/labelbridge-icon-600.png)를 사용하세요.
+대표 이미지는 루트의 [playmcp-representative-image.png](playmcp-representative-image.png)를 사용하세요.
 
 ## 사용 예시
 

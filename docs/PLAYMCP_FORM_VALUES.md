@@ -18,7 +18,7 @@
 | 항목 | 입력값 |
 | --- | --- |
 | 팀프로필 이름 | `eff0rtchung` |
-| 대표 이미지 | `assets/labelbridge-icon-600.png` |
+| 대표 이미지 | `playmcp-representative-image.png` |
 | MCP 이름 | `LabelBridge` |
 | MCP 식별자 | `labelBridge` |
 | MCP 설명 | `추천답변 없이 사람이 직접 채우는 blank-only human labeling MCP입니다. 배열 데이터를 빈칸 HTML 폼으로 만들고, 사용자가 모든 의미 값을 직접 입력하면 MCP가 1회용 capability와 무결성 hash로 검증해 array[dictionary]로 회수합니다. 게임 영웅별 특전 선택, 학생 진로 입력처럼 AI가 임의로 정하면 안 되는 판단을 안전하게 사람에게 맡깁니다.` |
@@ -39,7 +39,7 @@
 
 - `Git URL`: `https://github.com/studyreadbook4ever/labelbridge-mcp.git`
 - `MCP Endpoint`: PlayMCP에서 빌드/배포가 끝난 뒤 발급되거나 직접 배포한 공개 URL의 `/mcp` 경로를 넣습니다.
-- `대표 이미지`: `assets/labelbridge-icon-600.png`는 600x600 PNG라 업로드 조건에 맞습니다.
+- `대표 이미지`: `playmcp-representative-image.png`는 600x600 PNG라 업로드 조건에 맞습니다.
 
 Git URL은 `git ls-remote --heads https://github.com/studyreadbook4ever/labelbridge-mcp.git main`으로 공개 접근을 확인했습니다.
 GitHub Actions CI에서 `npm ci`, typecheck, test, build, audit, Docker build, container `/healthz`, container MCP full-loop, PlayMCP tool metadata audit 확인까지 통과했습니다.
