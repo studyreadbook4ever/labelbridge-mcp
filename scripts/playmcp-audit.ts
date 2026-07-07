@@ -9,6 +9,8 @@ const restrictedNamePattern = new RegExp(["ka", "kao"].join(""), "i");
 try {
   await assertProtocolVersion("2025-03-26");
   await assertProtocolVersion("2025-11-25");
+  await assertStreamableGetProbe();
+  await assertCorsPreflight();
   await assertForwardedBaseUrl();
 
   await client.connect(transport);
@@ -90,6 +92,38 @@ async function assertProtocolVersion(protocolVersion: "2025-03-26" | "2025-11-25
     body.result?.protocolVersion === protocolVersion,
     `Expected protocol ${protocolVersion}, got ${body.result?.protocolVersion ?? body.error?.message ?? "unknown"}`,
   );
+}
+
+async function assertStreamableGetProbe(): Promise<void> {
+  const response = await fetch(baseUrl, {
+    method: "GET",
+    headers: {
+      accept: "text/event-stream",
+      "mcp-protocol-version": "2025-11-25",
+    },
+  });
+  try {
+    assert(response.ok, `GET /mcp SSE probe returned HTTP ${response.status}`);
+    assert(
+      response.headers.get("content-type")?.includes("text/event-stream"),
+      `GET /mcp SSE probe returned unexpected content-type: ${response.headers.get("content-type") ?? "missing"}`,
+    );
+  } finally {
+    await response.body?.cancel();
+  }
+}
+
+async function assertCorsPreflight(): Promise<void> {
+  const response = await fetch(baseUrl, {
+    method: "OPTIONS",
+    headers: {
+      origin: "https://playmcp.example",
+      "access-control-request-method": "POST",
+      "access-control-request-headers": "content-type,accept,mcp-protocol-version",
+    },
+  });
+  assert(response.status === 204, `OPTIONS /mcp returned HTTP ${response.status}`);
+  assert(response.headers.get("access-control-allow-origin") === "*", "OPTIONS /mcp is missing CORS allow-origin.");
 }
 
 async function assertForwardedBaseUrl(): Promise<void> {

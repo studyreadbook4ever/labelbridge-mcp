@@ -66,3 +66,4 @@ https://배포된-호스트/healthz
 - Endpoint 정보 불러오기가 안 되면 GitHub URL을 넣은 것이 아닌지 확인합니다. Endpoint는 배포 후 생기는 공개 URL입니다.
 - `/healthz`는 되는데 `/mcp`가 안 되면 endpoint 끝이 정확히 `/mcp`인지 확인합니다.
 - 배포 URL이 `http://`만 보이면 공개 PlayMCP Endpoint에는 `https://` URL이 필요합니다.
+- 브라우저나 콘솔에서 먼저 점검하더라도 `/mcp`는 GET SSE probe와 OPTIONS preflight까지 대응합니다.

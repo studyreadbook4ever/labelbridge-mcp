@@ -51,7 +51,11 @@ app.get("/healthz", (_req, res) => {
   res.json({ ok: true, name: "labelbridge-mcp", version: "0.1.0" });
 });
 
-app.post("/mcp", async (req, res) => {
+app.options("/mcp", (_req, res) => {
+  res.status(204).end();
+});
+
+app.all("/mcp", async (req, res) => {
   const server = createMcpServer({ storage, config: configForRequest(req) });
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
@@ -79,9 +83,6 @@ app.post("/mcp", async (req, res) => {
     }
   }
 });
-
-app.get("/mcp", methodNotAllowed);
-app.delete("/mcp", methodNotAllowed);
 
 app.get("/forms/:sessionId", (req, res) => {
   serveForm(req, res, false);
@@ -163,21 +164,16 @@ function renderFormError(error: unknown, res: Response): void {
 </html>`);
 }
 
-function methodNotAllowed(_req: Request, res: Response): void {
-  res.status(405).json({
-    jsonrpc: "2.0",
-    error: {
-      code: -32000,
-      message: "Method not allowed.",
-    },
-    id: null,
-  });
-}
-
 function securityHeaders(_req: Request, res: Response, next: NextFunction): void {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "no-referrer");
   res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Accept, Authorization, Content-Type, Last-Event-ID, MCP-Protocol-Version, MCP-Session-Id",
+  );
   next();
 }
 
