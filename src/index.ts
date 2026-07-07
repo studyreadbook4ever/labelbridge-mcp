@@ -13,6 +13,7 @@ const storage = new LabelBridgeStorage(config.databasePath);
 
 const app = express();
 app.disable("x-powered-by");
+app.set("trust proxy", true);
 app.use(securityHeaders);
 app.use(hostGuard);
 app.use(express.json({ limit: process.env.JSON_LIMIT ?? "10mb" }));
@@ -51,7 +52,7 @@ app.get("/healthz", (_req, res) => {
 });
 
 app.post("/mcp", async (req, res) => {
-  const server = createMcpServer({ storage, config });
+  const server = createMcpServer({ storage, config: configForRequest(req) });
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
     enableJsonResponse: true,
@@ -99,7 +100,11 @@ app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
 
 const httpServer = app.listen(config.port, config.host, () => {
   console.log(`LabelBridge MCP listening on http://${config.host}:${config.port}`);
-  console.log(`Public base URL: ${config.publicBaseUrl}`);
+  console.log(
+    config.publicBaseUrlExplicit
+      ? `Public base URL: ${config.publicBaseUrl}`
+      : `Public base URL: inferred from request Host/X-Forwarded-* headers (fallback: ${config.publicBaseUrl})`,
+  );
 });
 
 process.on("SIGINT", shutdown);
@@ -121,7 +126,7 @@ function serveForm(req: Request, res: Response, attachment: boolean): void {
     storage.assertSessionCanView(session, digest);
     storage.recordFormRendered(sessionId);
     const html = renderLabelingForm({ session, items, capabilityToken });
-    const urls = makeFormUrls(config.publicBaseUrl, session, capabilityToken);
+    const urls = makeFormUrls(publicBaseUrlForRequest(req), session, capabilityToken);
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("Cache-Control", "no-store, max-age=0");
@@ -191,6 +196,30 @@ function hostGuard(req: Request, res: Response, next: NextFunction): void {
     return;
   }
   res.status(403).json({ ok: false, error: "host_not_allowed" });
+}
+
+function configForRequest(req: Request): typeof config {
+  if (config.publicBaseUrlExplicit) {
+    return config;
+  }
+  return { ...config, publicBaseUrl: publicBaseUrlForRequest(req) };
+}
+
+function publicBaseUrlForRequest(req: Request): string {
+  if (config.publicBaseUrlExplicit) {
+    return config.publicBaseUrl;
+  }
+  const proto = firstHeader(req.headers["x-forwarded-proto"]) || (req.secure ? "https" : "http");
+  const host = firstHeader(req.headers["x-forwarded-host"]) || req.headers.host || `localhost:${config.port}`;
+  return `${proto}://${host}`.replace(/\/+$/, "");
+}
+
+function firstHeader(value: string | string[] | undefined): string | undefined {
+  const raw = Array.isArray(value) ? value[0] : value;
+  return raw
+    ?.split(",")[0]
+    ?.trim()
+    .toLowerCase();
 }
 
 function escapeHtml(value: string): string {

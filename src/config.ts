@@ -6,6 +6,7 @@ export interface AppConfig {
   host: string;
   port: number;
   publicBaseUrl: string;
+  publicBaseUrlExplicit: boolean;
   dataDir: string;
   databasePath: string;
   serverSecret: Buffer;
@@ -43,11 +44,13 @@ export function loadConfig(): AppConfig {
   const databasePath = resolve(process.env.DATABASE_PATH ?? `${dataDir}/labelbridge.sqlite`);
   mkdirSync(dataDir, { recursive: true });
 
-  const publicBaseUrl = (process.env.PUBLIC_BASE_URL ?? `http://localhost:${port}`).replace(/\/+$/, "");
+  const rawPublicBaseUrl = process.env.PUBLIC_BASE_URL?.trim();
+  const publicBaseUrl = (rawPublicBaseUrl || `http://localhost:${port}`).replace(/\/+$/, "");
   return {
     host,
     port,
     publicBaseUrl,
+    publicBaseUrlExplicit: Boolean(rawPublicBaseUrl),
     dataDir,
     databasePath,
     serverSecret: loadOrCreateSecret(dataDir),

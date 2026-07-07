@@ -42,7 +42,6 @@ jobs:
           docker run --rm -d \
             --name labelbridge-mcp-ci \
             -p 3000:3000 \
-            -e PUBLIC_BASE_URL=http://127.0.0.1:3000 \
             labelbridge-mcp:ci
 
       - name: Check container health

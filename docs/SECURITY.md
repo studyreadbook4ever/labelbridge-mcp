@@ -53,7 +53,7 @@ LabelBridge는 "파일이 복사되지 않는다"를 보장하지 않습니다. 
 
 ## 운영 권장
 
-- 배포 시 `PUBLIC_BASE_URL`은 HTTPS URL로 설정하세요.
+- 배포 시 프록시가 `Host`/`X-Forwarded-*` 헤더를 전달하지 않는다면 `PUBLIC_BASE_URL`을 실제 HTTPS URL로 설정하세요.
 - 운영 서버에는 긴 `LABELBRIDGE_SECRET`을 환경 변수로 지정하세요.
 - `DATA_DIR`은 외부에서 다운로드할 수 없는 경로로 두세요.
 - 프록시 뒤에서 운영하면 `ALLOWED_HOSTS=example.com`처럼 Host allowlist를 설정하세요.

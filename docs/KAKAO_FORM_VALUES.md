@@ -39,7 +39,7 @@
 
 - `Git URL`: `https://github.com/studyreadbook4ever/labelbridge-mcp.git`
 - `MCP Endpoint`: PlayMCP에서 빌드/배포가 끝난 뒤 발급되거나 직접 배포한 공개 URL의 `/mcp` 경로를 넣습니다.
-- `대표 이미지`: `assets/labelbridge-icon-600.png`는 1254x1254 PNG라 업로드 조건에 맞습니다.
+- `대표 이미지`: `assets/labelbridge-icon-600.png`는 600x600 PNG라 업로드 조건에 맞습니다.
 
 Git URL은 `git ls-remote --heads https://github.com/studyreadbook4ever/labelbridge-mcp.git main`으로 공개 접근을 확인했습니다.
 GitHub Actions CI에서 `npm ci`, typecheck, test, build, audit, Docker build, container `/healthz`, container MCP full-loop, PlayMCP tool metadata audit 확인까지 통과했습니다.
