@@ -79,10 +79,11 @@ async function assertProtocolVersion(protocolVersion: "2025-03-26" | "2025-11-25
     }),
   });
   const body = (await response.json()) as {
-    result?: { protocolVersion?: string };
+    result?: { protocolVersion?: string; serverInfo?: { name?: string } };
     error?: { message?: string };
   };
   assert(response.ok, `Initialize ${protocolVersion} returned HTTP ${response.status}: ${JSON.stringify(body)}`);
+  assert(!/kakao/i.test(body.result?.serverInfo?.name ?? ""), `Server name must not contain kakao`);
   assert(
     body.result?.protocolVersion === protocolVersion,
     `Expected protocol ${protocolVersion}, got ${body.result?.protocolVersion ?? body.error?.message ?? "unknown"}`,

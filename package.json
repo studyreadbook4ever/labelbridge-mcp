@@ -23,8 +23,7 @@
     "mcp",
     "playmcp",
     "labeling",
-    "human-in-the-loop",
-    "kakao"
+    "human-in-the-loop"
   ],
   "author": "",
   "license": "MIT",
